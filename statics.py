@@ -3,3 +3,4 @@ COLORS = {'background':'#333333',
 
 FONT = "Courier New"
 
+DC_PRICE = 0.00001

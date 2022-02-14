@@ -26,109 +26,128 @@ sql_query = pd.read_sql_query ('''
 
 df = pd.DataFrame(sql_query)
 
+# sql_hnt_query = pd.read_sql_query ('''
+#                                SELECT
+#                                *
+#                                FROM Coins
+#                                ''', conn)
+
+
 df_1d = df[df['Interval'].str.contains('1d')]
 df_1h = df[df['Interval'].str.contains('1h')]
 
+burned_dolars = pd.Series(df_1d['total'] * statics.DC_PRICE)
+
 print(df)
+
+
+
+
+
+
+
 
 fig = go.Figure()
 
-
 fig.add_trace(go.Scatter(x=df_1d['Date'],
-                    y=df_1d['total'],
-                    mode='lines+markers',
-                    name='test-name',
-                    marker=dict(
-                        size=7,
-                        color='#ff5252',
-                        symbol='circle',
-                        line = {'width':1}, # line around marker
-                    ),
+                    y=burned_dolars,
+                    mode='lines',
+                    name='Burned',
+                    yaxis="y2",
+                    # marker=dict(
+                    #     size=5,
+                    #     color='#ff5252',
+                    #     symbol='circle',
+                    #     line = {'width':1}, # line around marker
+                    # ),
                     line=dict(
-                        color='#ff7b7b',
+                        color='#ff3f3f',
                         width=3,
                     )))
 
 
-fig.add_trace(go.Scatter(x=df_1h['Date'],
-                    y=df_1h['total'],
-                    mode='lines+markers',
-                    name='test-name',
-                    marker=dict(
-                        size=7,
-                        color='#ff5252',
-                        symbol='circle',
-                        line = {'width':1}, # line around marker
-                    ),
-                    line=dict(
-                        color='#ff7f0e',
-                        width=3,
-                    ),
-                    yaxis="y2"))
+fig.add_trace(go.Bar(
+    name='State channel',
+    x=df_1d['Date'],
+    y=df_1d['State channel'],
+    marker_color='#ffcc06',
+))
+
+fig.add_trace(go.Bar(
+    name='Fee',
+    x=df_1d['Date'],
+    y=df_1d['Fee'],
+    marker_color='#9ad70a',
+))
+
+fig.add_trace(go.Bar(
+    name='Assert location',
+    x=df_1d['Date'],
+    y=df_1d['Assert location'],
+    marker_color='#d70a9a',
+))
+
+fig.add_trace(go.Bar(
+    name='Add gateway',
+    legendgrouptitle=dict(font=dict(size=20)),
+    x=df_1d['Date'],
+    y=df_1d['Add gateway'],
+    marker_color='#0a9ad7',
+))
 
 
-
-
-# trace00 = go.Scatter(x=df_1d['Date'],
-#                     y=df_1d['total'],
-#                     mode='lines+markers',
-#                     name='test-name',
-#                     marker=dict(
-#                         size=7,
-#                         color='#ff5252',
-#                         symbol='circle',
-#                         line = {'width':1}, # line around marker
-#                     ),
-#                     line=dict(
-#                         color='#ff7b7b',
-#                         width=3,
-#                     ))
-
-# trace01 = go.Scatter(x=df_1d['Date'],
-#                     y=df_1d['total'],
-#                     mode='lines+markers',
-#                     name='test-name',
-#                     marker=dict(
-#                         size=7,
-#                         color='#ff5252',
-#                         symbol='circle',
-#                         line = {'width':1}, # line around marker
-#                     ),
-#                     line=dict(
-#                         color='#ff7b7b',
-#                         width=3,
-#                     ))
 
 
 
 fig.update_layout(
+    legend=dict(title_font_family="Times New Roman",
+                              font=dict(size= 20)),
+    barmode='stack',
     xaxis=dict(
-        domain=[0.3, 0.7]
+        domain=[0.10, 1],
+        gridcolor="white",
+        title="Time frame",
+        titlefont=dict(
+            color="white",
+            size=25,
+        ),
+        tickfont=dict(
+            color="white",
+            size=20,
+        ),
+        
     ),
     yaxis=dict(
-        title="yaxis title",
+        title="DC Burn Totals",
         titlefont=dict(
-            color="#1f77b4"
+            color="white",
+            size=25,
         ),
         tickfont=dict(
-            color="#1f77b4"
-        )
+            color="white",
+            size=20,
+        ),
+        
     ),
     yaxis2=dict(
-        title="yaxis2 title",
+        automargin=True,
+        range=(0,burned_dolars.max() + burned_dolars.max()*10/100),
+        title="Burned dollars($)",
         titlefont=dict(
-            color="#ff7f0e"
+            color="#ff5252",
+            size=25,
         ),
         tickfont=dict(
-            color="#ff7f0e"
+            color="#ff5252",
+            size=20,
         ),
         anchor="free",
         overlaying="y",
         side="left",
-        position=0.15
-    )
+        position=0.05,
+        linecolor="#ff5252"
+    ),
 )
-
 
 
 
