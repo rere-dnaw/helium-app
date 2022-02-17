@@ -14,7 +14,7 @@ import sqlite3
 
 app = dash.Dash()
 
-conn = sqlite3.connect('/mnt/Data/1.Programming/helium/helium-sql/dbHeliumApp.db') 
+conn = sqlite3.connect('/mnt/Data/1.Programming/helium/helium-sql/dbHeliumApp2.db') 
 
 sql_query = pd.read_sql_query ('''
                                SELECT
@@ -38,14 +38,6 @@ df_1h = df[df['Interval'].str.contains('1h')]
 
 burned_dolars = pd.Series(df_1d['total'] * statics.DC_PRICE)
 
-print(df)
-
-
-
-
-
-
-
 
 fig = go.Figure()
 
@@ -61,8 +53,8 @@ fig.add_trace(go.Scatter(x=df_1d['Date'],
                     #     line = {'width':1}, # line around marker
                     # ),
                     line=dict(
-                        color='#ff3f3f',
-                        width=3,
+                        color='#ffcc00',
+                        width=2,
                     )))
 
 
@@ -70,21 +62,30 @@ fig.add_trace(go.Bar(
     name='State channel',
     x=df_1d['Date'],
     y=df_1d['State channel'],
-    marker_color='#ffcc06',
+    marker=dict(
+        color = '#ce481c',
+        line = {'width':0}, # line around marker
+    ),
 ))
 
 fig.add_trace(go.Bar(
     name='Fee',
     x=df_1d['Date'],
     y=df_1d['Fee'],
-    marker_color='#9ad70a',
+    marker=dict(
+        color = '#b30d73',
+        line = {'width':0}, # line around marker
+    ),
 ))
 
 fig.add_trace(go.Bar(
     name='Assert location',
     x=df_1d['Date'],
     y=df_1d['Assert location'],
-    marker_color='#d70a9a',
+    marker=dict(
+        color = '#01a39e',
+        line = {'width':0}, # line around marker
+    ),
 ))
 
 fig.add_trace(go.Bar(
@@ -92,7 +93,11 @@ fig.add_trace(go.Bar(
     legendgrouptitle=dict(font=dict(size=20)),
     x=df_1d['Date'],
     y=df_1d['Add gateway'],
-    marker_color='#0a9ad7',
+    marker=dict(
+        color = '#660066',
+        line = {'width':0}, # line around marker
+    ),
+    #marker_color='#0a9ad7',
 ))
 
 
@@ -130,22 +135,23 @@ fig.update_layout(
         
     ),
     yaxis2=dict(
+        gridcolor="#fcdc4d",
         automargin=True,
         range=(0,burned_dolars.max() + burned_dolars.max()*10/100),
         title="Burned dollars($)",
         titlefont=dict(
-            color="#ff5252",
+            color="#ffcc00",
             size=25,
         ),
         tickfont=dict(
-            color="#ff5252",
+            color="#ffcc00",
             size=20,
         ),
         anchor="free",
         overlaying="y",
         side="left",
         position=0.05,
-        linecolor="#ff5252"
+        linecolor="#ffcc00"
     ),
 )
 

@@ -63,7 +63,7 @@ from dash.dependencies import Input, Output
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+app = Dash()
 
 app.layout = html.Div([
     html.H1('Dash Tabs component demo'),
