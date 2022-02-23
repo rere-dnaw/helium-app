@@ -6,8 +6,9 @@ import chart_inflation
 from base import app
 
 
-# fig_burnDC = go.Figure()
-# chart_burn_DC.create_chart_burn_DC(fig_burnDC)
+fig_burnDC = go.Figure()
+chart_burn_DC.create_chart_burn_DC(fig_burnDC)
+fig_burnDC.layout.height = 100
 
 fig_inflation = go.Figure()
 chart_inflation.create_chart_inflation(fig_inflation)
@@ -18,6 +19,8 @@ app.layout = html.Div([
     dcc.Tabs(
         id="tabs_component",
         value='tab_burn_DC',
+        parent_className='custom-tabs',
+        className='custom-tabs-container',
         children=[
             dcc.Tab(
                 label='Burned DC',
@@ -32,8 +35,8 @@ app.layout = html.Div([
                 selected_className='custom-tab--selected',
             ),
         ]),
-    html.Div(id='tabs-content-example-graph')
-])
+    html.Div(id='tabs-content-example-graph', className='div_test')
+], className='div_test')
 
 @app.callback(Output('tabs-content-example-graph', 'children'),
               Input('tabs_component', 'value'))
@@ -42,21 +45,16 @@ def render_content(tab):
         return html.Div([
             html.H3('Tab content 1'),
             dcc.Graph(id='example,',
-            figure=fig_burnDC)
+            figure=fig_burnDC,
+            responsive=True)
         ])
     elif tab == 'tab_burn_infla':
         return html.Div([
             html.H3('Tab content 2'),
             dcc.Graph(
                 id='graph-2-tabs',
-                figure={
-                    'data': [{
-                        'x': [1, 2, 3],
-                        'y': [5, 10, 6],
-                        'type': 'bar'
-                    }]
-                }
-            )
+                figure=fig_inflation,
+                responsive=True)
         ])
 
 if __name__ == '__main__':
