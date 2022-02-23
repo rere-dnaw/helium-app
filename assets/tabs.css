@@ -1,5 +1,13 @@
+.div_test {
+    width: 100%;
+    height: 100%;
+    background-color: #a9ccec;
+}
+
 .custom-tabs-container {
-    width: 85%;
+    width: 100%;
+    height: 100%;
+    background-color: #c50000;
 }
 .custom-tabs {
     border-top-left-radius: 3px;

@@ -5,14 +5,14 @@ from base import conn
 
 
 
-def chart_burn_DC(fig, interval_data, burned_dollars):
+def chart_inflation_DC(fig, df_burned, df_rewards, df_supply):
     '''
     '''
 
-    fig.add_trace(go.Scatter(x=interval_data['Date'],
-                        y=burned_dollars,
+    fig.add_trace(go.Scatter(x=df_supply['Date'],
+                        y=df_supply['Supply amount'],
                         mode='lines',
-                        name='Burned',
+                        name='Total supply',
                         yaxis="y2",
                         # marker=dict(
                         #     size=5,
@@ -21,37 +21,26 @@ def chart_burn_DC(fig, interval_data, burned_dollars):
                         #     line = {'width':1}, # line around marker
                         # ),
                         line=dict(
-                            color='#ffcc00',
-                            width=2,
+                            color='#ce481c',
+                            width=4,
                         )))
 
 
     fig.add_trace(go.Bar(
-        name='State channel',
-        x=interval_data['Date'],
-        y=interval_data['State channel'],
+        name='Burned',
+        x=df_burned['Date'],
+        y=df_burned['Burned HNT'],
         marker=dict(
-            color = '#ce481c',
+            color = '#660066',
             line = {'width':0}, # line around marker
         ),
     ))
 
 
     fig.add_trace(go.Bar(
-        name='Fee',
-        x=interval_data['Date'],
-        y=interval_data['Fee'],
-        marker=dict(
-            color = '#b30d73',
-            line = {'width':0}, # line around marker
-        ),
-    ))
-
-
-    fig.add_trace(go.Bar(
-        name='Assert location',
-        x=interval_data['Date'],
-        y=interval_data['Assert location'],
+        name='Rewards',
+        x=df_rewards['Date'],
+        y=df_rewards['Rewards'],
         marker=dict(
             color = '#01a39e',
             line = {'width':0}, # line around marker
@@ -59,22 +48,10 @@ def chart_burn_DC(fig, interval_data, burned_dollars):
     ))
 
 
-    fig.add_trace(go.Bar(
-        name='Add gateway',
-        legendgrouptitle=dict(font=dict(size=20)),
-        x=interval_data['Date'],
-        y=interval_data['Add gateway'],
-        marker=dict(
-            color = '#660066',
-            line = {'width':0}, # line around marker
-        ),
-        #marker_color='#0a9ad7',
-    ))
-
-
     fig.update_layout(
         legend=dict(title_font_family="Times New Roman",
-                                font=dict(size= 20)),
+                                font=dict(size= 20),
+                                orientation="h"),
         barmode='stack',
         xaxis=dict(
             domain=[0.10, 1],
@@ -105,21 +82,20 @@ def chart_burn_DC(fig, interval_data, burned_dollars):
         yaxis2=dict(
             gridcolor="#fcdc4d",
             automargin=True,
-            range=(0,burned_dollars.max() + burned_dollars.max()*10/100),
-            title="Burned dollars($)",
+            range=(0,df_supply['Supply amount'].max() + df_supply['Supply amount'].max()*10/100),
+            title="HNT circulating supply",
             titlefont=dict(
-                color="#ffcc00",
+                color="#ce481c",
                 size=25,
             ),
             tickfont=dict(
-                color="#ffcc00",
+                color="#ce481c",
                 size=20,
             ),
-            anchor="free",
+            anchor="x",
             overlaying="y",
-            side="left",
-            position=0.05,
-            linecolor="#ffcc00"
+            side="right",
+            linecolor="white"
         ),
     )
 
@@ -131,6 +107,7 @@ def chart_burn_DC(fig, interval_data, burned_dollars):
         font_family=statics.FONT,
     )
 
+    fig.update_yaxes(automargin=True)
 
 def create_chart_inflation(fig):
     '''
@@ -186,26 +163,21 @@ def create_chart_inflation(fig):
     df_burnDC['Date']=df_burnDC.Date + pd.Timedelta(days=1)
 
 
-    burn_HNT = df_burnDC.drop(['id', 'timestamp', 'Interval', 'State channel', 'Fee', 'Assert location', 'Add gateway'], axis = 1).set_index('Date')
+    price_HNT = df_burnDC.drop(['id', 'timestamp', 'Interval', 'State channel', 'Fee', 'Assert location', 'Add gateway'], axis = 1)
     #print(burn_HNT)
-    price_close = df_PriceHNT.drop(['id', 'coin_id', 'timestamp', 'Interval', 'Open', 'High', 'Low', 'Volume'], axis = 1).set_index('Date')
+    price_close = df_PriceHNT.drop(['id', 'coin_id', 'timestamp', 'Interval', 'Open', 'High', 'Low', 'Volume'], axis = 1)
     #print(price_close)
-    df = pd.concat([burn_HNT,price_close], axis=0).ffill().bfill()
-    print(df)
+    burned_HNT = pd.merge(price_HNT, price_close, on = "Date", how = "inner")
+    burned_HNT['Burned HNT'] = (burned_HNT['total'] * statics.DC_PRICE) / burned_HNT['Close']
 
-    df_burned_HNT = pd.DataFrame(data).set_index('Date', inplace=True)
-    
-    #print(df_burned_HNT)
-    ##df_burned_HNT = pd.Series((df_burnDC['total']* statics.DC_PRICE) / df_PriceHNT['Close'])
-    df_burned_HNT.set_index('Date', inplace=True)
-    print(df_burned_HNT)
-    print(df_burnDC.dtypes)
 
-    
+    df_rewardsHNT = df_rewardsHNT.sort_values(by="Date")
 
-    df_burnDC_1d = df_burnDC[df_burnDC['Interval'].str.contains('1d')]
-    burned_dolars = pd.Series(df_burnDC_1d['total'] * statics.DC_PRICE)
+    # print(burned_HNT)
 
-    chart_burn_DC(fig, df_burnDC_1d, burned_dolars)
+    # print('t')
+
+
+    chart_inflation_DC(fig, burned_HNT, df_rewardsHNT, df_token_supply)
 
 

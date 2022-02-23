@@ -1,63 +1,91 @@
-from dash import Dash, dcc, html
+import requests
+import json
+
+import dash
 from dash.dependencies import Input, Output
-import plotly.graph_objects as go
-import sqlite3
-import pandas as pd
-import statics
-import chart_burn_DC
+import dash_html_components as html
 
+import dash_cytoscape as cyto
 
+def load_json(st):
+    if 'http' in st:
+        return requests.get(st).json()
+    else:
+        with open(st, 'rb') as f:
+            x = json.load(f)
+        return x
 
-app = Dash()
+app = dash.Dash(__name__)
+server = app.server
 
-conn = sqlite3.connect('/mnt/Data/1.Programming/helium/helium-sql/dbHeliumApp.db') 
+# Load Data
+elements = load_json('https://js.cytoscape.org/demos/colajs-graph/data.json')
+stylesheet = load_json('https://js.cytoscape.org/demos/colajs-graph/cy-style.json')
 
-sql_query = pd.read_sql_query ('''
-                               SELECT
-                               *
-                               FROM BurnedDC
-                               ''', conn)
+styles = {
+    'container': {
+        'position': 'fixed',
+        'display': 'flex',
+        'flex-direction': 'column',
+        'height': '100%',
+        'width': '100%'
+    },
+    'cy-container': {
+        'flex': '1',
+        'position': 'relative'
+    },
+    'cytoscape': {
+        'position': 'absolute',
+        'width': '100%',
+        'height': '100%',
+        'z-index': 999
+    }
+}
 
-df = pd.DataFrame(sql_query)
-
-df_1d = df[df['Interval'].str.contains('1d')]
-burned_dolars = pd.Series(df_1d['total'] * statics.DC_PRICE)
-
-burnDCchart = go.Figure()
-chart_burn_DC.burn_DC_chart(burnDCchart, df_1d, burned_dolars)
-
-app.layout = html.Div([
-    html.H1('Dash Tabs component demo'),
-    dcc.Tabs(id="tabs-example-graph", value='tab-1-example-graph', children=[
-        dcc.Tab(label='Tab One', value='tab-1-example-graph'),
-        dcc.Tab(label='Tab Two', value='tab-2-example-graph'),
+# App
+app.layout = html.Div(style=styles['container'], children=[
+    html.Div([
+        html.Button("Responsive Toggle", id='toggle-button'),
+        html.Div(id='toggle-text')
     ]),
-    html.Div(id='tabs-content-example-graph')
+    html.Div(className='cy-container', style=styles['cy-container'], children=[
+        cyto.Cytoscape(
+            id='cytoscape-responsive-layout',
+            elements=elements,
+            stylesheet=stylesheet,
+            style=styles['cytoscape'],
+            layout={
+                'name': 'cose',
+                'idealEdgeLength': 100,
+                'nodeOverlap': 20,
+                'refresh': 20,
+                'fit': True,
+                'padding': 30,
+                'randomize': False,
+                'componentSpacing': 100,
+                'nodeRepulsion': 400000,
+                'edgeElasticity': 100,
+                'nestingFactor': 5,
+                'gravity': 80,
+                'numIter': 1000,
+                'initialTemp': 200,
+                'coolingFactor': 0.95,
+                'minTemp': 1.0
+            },
+            responsive=True
+        )
+    ])
 ])
 
-@app.callback(Output('tabs-content-example-graph', 'children'),
-              Input('tabs-example-graph', 'value'))
-def render_content(tab):
-    if tab == 'tab-1-example-graph':
-        return html.Div([
-            html.H3('Tab content 1'),
-            dcc.Graph(id='example,',
-            figure=burnDCchart)
-        ])
-    elif tab == 'tab-2-example-graph':
-        return html.Div([
-            html.H3('Tab content 2'),
-            dcc.Graph(
-                id='graph-2-tabs',
-                figure={
-                    'data': [{
-                        'x': [1, 2, 3],
-                        'y': [5, 10, 6],
-                        'type': 'bar'
-                    }]
-                }
-            )
-        ])
+@app.callback(Output('cytoscape', 'responsive'), Input('toggle-button', 'n_clicks'))
+def toggle_responsive(n_clicks):
+    n_clicks = 2 if n_clicks is None else n_clicks
+    toggle_on = n_clicks % 2 == 0
+    return toggle_on
+
+@app.callback(Output('toggle-text', 'children'), Input('cytoscape', 'responsive'))
+def update_toggle_text(responsive):
+    return '\t' + 'Responsive ' + ('On' if responsive else 'Off')
 
 if __name__ == '__main__':
     app.run_server(debug=True)

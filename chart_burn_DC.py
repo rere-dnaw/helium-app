@@ -74,7 +74,8 @@ def chart_burn_DC(fig, interval_data, burned_dollars):
 
     fig.update_layout(
         legend=dict(title_font_family="Times New Roman",
-                                font=dict(size= 20)),
+                                font=dict(size= 20),
+                                orientation="h"),
         barmode='stack',
         xaxis=dict(
             domain=[0.10, 1],
@@ -115,10 +116,10 @@ def chart_burn_DC(fig, interval_data, burned_dollars):
                 color="#ffcc00",
                 size=20,
             ),
-            anchor="free",
+            anchor="x", #chnged from free
             overlaying="y",
-            side="left",
-            position=0.05,
+            side="right",
+            #position=0.05, #doesn't work when anchor in not free
             linecolor="#ffcc00"
         ),
     )
