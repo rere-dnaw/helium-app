@@ -8,14 +8,14 @@ from base import app
 
 fig_burnDC = go.Figure()
 chart_burn_DC.create_chart_burn_DC(fig_burnDC)
-fig_burnDC.layout.height = 100
+
 
 fig_inflation = go.Figure()
 chart_inflation.create_chart_inflation(fig_inflation)
 
 
 app.layout = html.Div([
-    html.H1('Helium data'),
+    html.H1('Helium data', className='title_style'),
     dcc.Tabs(
         id="tabs_component",
         value='tab_burn_DC',
@@ -43,19 +43,17 @@ app.layout = html.Div([
 def render_content(tab):
     if tab == 'tab_burn_DC':
         return html.Div([
-            html.H3('Tab content 1'),
             dcc.Graph(id='example,',
             figure=fig_burnDC,
-            responsive=True)
+            style={'height': '80vh'})
         ])
     elif tab == 'tab_burn_infla':
         return html.Div([
-            html.H3('Tab content 2'),
             dcc.Graph(
                 id='graph-2-tabs',
                 figure=fig_inflation,
-                responsive=True)
+                style={'height': '80vh'})
         ])
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()
