@@ -1,4 +1,4 @@
-COLORS = {'background':'#2a3050',
+COLORS = {'background':'#0D1F2D',
             'text':'#ffffff'}
 
 FONT = "Courier New"
