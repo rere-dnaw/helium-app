@@ -68,7 +68,7 @@ def chart_inflation_DC(fig, df_burned, df_rewards, df_supply):
             
         ),
         yaxis=dict(
-            title="DC Burn Totals",
+            title="Burn vs Reward (HNT)",
             titlefont=dict(
                 color="white",
                 size=25,
@@ -77,10 +77,11 @@ def chart_inflation_DC(fig, df_burned, df_rewards, df_supply):
                 color="white",
                 size=20,
             ),
+            side="right",
             
         ),
         yaxis2=dict(
-            gridcolor="#fcdc4d",
+            gridcolor="#ce481c",
             automargin=True,
             range=(0,df_supply['Supply amount'].max() + df_supply['Supply amount'].max()*10/100),
             title="HNT circulating supply",
@@ -94,7 +95,7 @@ def chart_inflation_DC(fig, df_burned, df_rewards, df_supply):
             ),
             anchor="x",
             overlaying="y",
-            side="right",
+            
             linecolor="white"
         ),
     )

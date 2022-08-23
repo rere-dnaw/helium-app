@@ -13,4 +13,4 @@ app = Dash(
         }
     ],)
 
-conn = sqlite3.connect('/mnt/Data/1.Programming/helium/helium-sql/dbHeliumApp.db') 
+conn = sqlite3.connect('/home/l080lap/Documents/1.Programming/python/helium/helium-sql/dbHeliumApp.db') 
