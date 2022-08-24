@@ -1,6 +1,7 @@
 from dash import Dash
 import dash_bootstrap_components as dbc
 import sqlite3
+from statics import DB_LOCATION
 
 
 app = Dash(
@@ -13,4 +14,4 @@ app = Dash(
         }
     ],)
 
-conn = sqlite3.connect('/home/l080lap/Documents/1.Programming/python/helium/helium-sql/dbHeliumApp.db') 
+conn = sqlite3.connect(DB_LOCATION) 
